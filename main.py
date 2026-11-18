@@ -1,25 +1,29 @@
-# news-image-20261117 entry (Python 3.13, standard library only): copy the
-# vendored front-page image beside this file to /output/entry.png. The image
-# sums up Tuesday 17 November 2026 in 30 verified stories across six
-# continents, with a pinned world map. No network is used. Run it with:
-#   mkdir -p out && MAKEFUN_OUTPUT_DIR=out python3 main.py
-import hashlib
+#!/usr/bin/env python3
+"""news-image-20261117 round 2: write the front page to /output/entry.png.
+
+The image (entry.png) is drawn at build time by build.py with Pillow and
+committed beside this program. The grader runs with no network and only
+the Python standard library, so this entrypoint simply copies the file.
+Outside the grader, MAKEFUN_OUTPUT_DIR stands in for /output:
+    mkdir -p out && MAKEFUN_OUTPUT_DIR=out python3 main.py
+"""
 import os
 import shutil
 
-SRC = os.path.join(os.path.dirname(os.path.abspath(__file__)), "entry.png")
-DST = os.path.join(os.environ.get("MAKEFUN_OUTPUT_DIR", "/output"), "entry.png")
+
+def main():
+    here = os.path.dirname(os.path.abspath(__file__))
+    outdir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
+    os.makedirs(outdir, exist_ok=True)
+    src = os.path.join(here, "entry.png")
+    dst = os.path.join(outdir, "entry.png")
+    shutil.copyfile(src, dst)
+    with open(dst, "rb") as f:
+        head = f.read(8)
+    assert head[:4] == b"\x89PNG", "entry.png is not a PNG"
+    assert os.path.getsize(dst) <= 1048576, "entry.png over 1 MiB"
+    print("wrote %s (%d bytes)" % (dst, os.path.getsize(dst)))
 
 
-def sha256(path):
-    h = hashlib.sha256()
-    with open(path, "rb") as f:
-        h.update(f.read())
-    return h.hexdigest()
-
-
-os.makedirs(os.path.dirname(DST), exist_ok=True)
-shutil.copyfile(SRC, DST)
-if sha256(SRC) != sha256(DST):
-    raise SystemExit("entry.png copy failed sha256 verification")
-print(f"wrote {DST} ({os.path.getsize(DST)} bytes)")
+if __name__ == "__main__":
+    main()
