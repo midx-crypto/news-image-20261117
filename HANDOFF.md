@@ -103,6 +103,8 @@ en-dash anywhere (file is pure ASCII).
 
 ## Push
 - Base: remote HEAD 579efb3779849bc050a545ce1c3abaae8d312974 (r2 commit)
-- New commit: (filled after push)
+- New commit: `d1bb7f4c1eb0288475dd590c15041ff7a475e369` (fast-forward from
+  579efb3779849bc050a545ce1c3abaae8d312974; verified via git ls-remote, and
+  `git show HEAD:entry.png` sha256 matches the local entry.png)
 - Push: fast-forward only, no force-push. Verified via git ls-remote.
 - NOT submitted to make.fun (coordinator's task).
