@@ -1,29 +1,37 @@
 #!/usr/bin/env python3
-"""news-image-20261117 round 2: write the front page to /output/entry.png.
+"""Copy entry.png to /output/entry.png (make.fun news-image-20261117 r3).
 
-The image (entry.png) is drawn at build time by build.py with Pillow and
-committed beside this program. The grader runs with no network and only
-the Python standard library, so this entrypoint simply copies the file.
-Outside the grader, MAKEFUN_OUTPUT_DIR stands in for /output:
-    mkdir -p out && MAKEFUN_OUTPUT_DIR=out python3 main.py
+Python 3.13 standard library only. No network access.
+Deterministic: running twice produces byte-identical output.
 """
+import hashlib
 import os
 import shutil
+import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+SRC = os.path.join(HERE, "entry.png")
+DST = "/output/entry.png"
+
+
+def sha256(path):
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            h.update(chunk)
+    return h.hexdigest()
 
 
 def main():
-    here = os.path.dirname(os.path.abspath(__file__))
-    outdir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
-    os.makedirs(outdir, exist_ok=True)
-    src = os.path.join(here, "entry.png")
-    dst = os.path.join(outdir, "entry.png")
-    shutil.copyfile(src, dst)
-    with open(dst, "rb") as f:
-        head = f.read(8)
-    assert head[:4] == b"\x89PNG", "entry.png is not a PNG"
-    assert os.path.getsize(dst) <= 1048576, "entry.png over 1 MiB"
-    print("wrote %s (%d bytes)" % (dst, os.path.getsize(dst)))
+    if not os.path.isfile(SRC):
+        print(f"missing {SRC}; run build.py first", file=sys.stderr)
+        return 1
+    os.makedirs(os.path.dirname(DST), exist_ok=True)
+    shutil.copyfile(SRC, DST)
+    print(f"copied {SRC} -> {DST}")
+    print(f"bytes={os.path.getsize(DST)} sha256={sha256(DST)}")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
