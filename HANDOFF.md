@@ -1,5 +1,39 @@
 # news-image-20261117 — Round 3 handoff (bright-badger-10)
 
+## ROUND 3 FIX (2026-11-18, one-line surgical fix on top of a0701d3)
+- BUG (found by coordinator via pixel sampling, not a false alarm):
+  in build.py, `illu_rocket` lines 347-348 drew three light-blue bars with
+  ABSOLUTE coordinates:
+  `for px, py in ((230, 10), (260, 22), (280, 8)): d.rectangle([px, py, px + 12, py + 4], ...)`
+  so the bars landed in the masthead (x 230-292, y 8-26) instead of inside
+  the rocket card. Only absolute-coordinate bug in the file (line 223 uses
+  x-relative coords; lines 537-538 map leader lines are correctly absolute).
+- FIX: one line only, build.py line 348:
+  `d.rectangle([x + px, y + py, x + px + 12, y + py + 4], fill=(120, 200, 230))`
+  Nothing else in build.py changed. r2 files were NOT read.
+- entry.png NEW: 1024x1024, 201,456 bytes,
+  sha256 `22de165e95a9597f3cdecd384544a34a4801b3394c41276653b1ae95f53a1e84`
+  (old: 201,462 bytes,
+  `2000d8f2f40202114bef7b5e881303f503bec8ef1b2ce0db1a883283aeea4bb0`)
+- Determinism: build.py run 2x -> identical sha256
+  `22de165e95a9597f3cdecd384544a34a4801b3394c41276653b1ae95f53a1e84`;
+  main.py run 2x -> /output/entry.png identical sha256, matches entry.png.
+- Pixel sampling (entry.png baru, PIL):
+  * Masthead region x>190, y<28: ZERO pixels (120,200,230). Dominant colors
+    NAVY (22,35,63) 22,475 px and GOLD (201,162,39) 416 px; remaining pixels
+    are gold/navy anti-aliasing blends of the "48 STORIES" text and gold rule
+    (e.g. (50,55,59) = ~15% gold over navy), all clustered x 884-1004, y 14-27.
+  * Rocket card 11 illustration band (origin 350,458): three bars now fully
+    inside, 65/65 px light-blue each at rel (230,10), (260,22), (280,8);
+    256 light-blue px total in band (bars + rocket window ellipse).
+- Visual QA (full-size + 300px + enlarged masthead crop + rocket card crop):
+  no blue bars in masthead; no new defects (no typo/overlap/pin issues);
+  three bars now visible inside card 11 as debris/stars, as designed.
+- Work dir for this fix: `~/workspace/makefun/news-image-20261117-r3fix/`
+  (fresh clone of https://github.com/midx-crypto/news-image-20261117,
+  base a0701d3c30f3401f4d4546a99e9fce62905490eb).
+- NOT submitted to make.fun (coordinator's task).
+
 ## Entry
 - Title: "The Day in World News - Tuesday 17 November 2026 (48 stories, 6 continents)"
 - entry.png: 1024x1024, 201,462 bytes,

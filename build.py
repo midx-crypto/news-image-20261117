@@ -345,7 +345,7 @@ def illu_rocket(d, x, y, w, h):
     d.ellipse([x + 60, y + 8, x + 110, y + 30], fill=(200, 120, 60))
     d.ellipse([x + 70, y + 14, x + 100, y + 26], fill=(230, 160, 90))
     for px, py in ((230, 10), (260, 22), (280, 8)):
-        d.rectangle([px, py, px + 12, py + 4], fill=(120, 200, 230))
+        d.rectangle([x + px, y + py, x + px + 12, y + py + 4], fill=(120, 200, 230))
 
 def illu_voyager(d, x, y, w, h):
     d.rectangle([x, y, x + w, y + h], fill=(10, 14, 34))
